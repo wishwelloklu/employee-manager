@@ -7,6 +7,9 @@ class DatabaseHelper {
 
   Database? _database;
 
+  String databaseName = "employee_database.db";
+  String tableName = "employee";
+
   Future<Database?> get database async {
     if (_database != null) {
       print(" no new db created");
@@ -20,10 +23,10 @@ class DatabaseHelper {
 
   initDatabase() async {
     return await openDatabase(
-      join(await getDatabasesPath(), 'employee_database.db'),
+      join(await getDatabasesPath(), databaseName),
       onCreate: (db, version) async {
         await db.execute('''
-          CREATE TABLE employee (
+          CREATE TABLE $tableName (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               name TEXT,
               role TEXT,

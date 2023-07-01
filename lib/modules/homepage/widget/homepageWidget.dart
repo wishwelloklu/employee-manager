@@ -8,7 +8,8 @@ import '../../../model/employeeModel.dart';
 
 Widget homepageWidget({
   required BuildContext context,
-  required void Function(DismissDirection direction, int index, int id) onSlideToDelete,
+  required void Function( int id) onSlideToDelete,
+  required void Function( EmployeeModel model) onEmplopyee,
   required EmployeeModelList? list,
   required DateFormat formatter,
 }) {
@@ -20,7 +21,7 @@ Widget homepageWidget({
               children: [
                 Dismissible(
                   key: ValueKey(list.employeeModelList![index]),
-                  onDismissed: (direction) => onSlideToDelete(direction, index, list.employeeModelList![index].id!),
+                  onDismissed: (direction) => onSlideToDelete( list.employeeModelList![index].id!),
                   
                   direction: DismissDirection.endToStart,
                   background: Container(
@@ -30,6 +31,7 @@ Widget homepageWidget({
                     child: Icon(Icons.delete),
                   ),
                   child: ListTile(
+                    onTap:()=> onEmplopyee(list.employeeModelList![index]),
                     title: Text("${list.employeeModelList![index].name}",
                         style: h3Black),
                     subtitle: Column(

@@ -93,13 +93,39 @@ class EmployeeListCubit extends Cubit<EmployeeListState> {
   }
 
   Future undoDelete(int id) async {
-    print("Undo");
     EmployeeCrud employeeCrud = EmployeeCrud();
     emit(LoadingEmployeeListState());
     var response = await employeeCrud.undoDelete(id);
     print(response);
     if (response == 1) {
       await fetchEmployeeList();
+    }
+  }
+
+  Future updateDetails({
+    required BuildContext context,
+    required int id,
+    required String name,
+    required String role,
+    required String startDate,
+    required String endDate,
+  }) async {
+    EmployeeCrud employeeCrud = EmployeeCrud();
+    emit(LoadingEmployeeListState());
+    var response = await employeeCrud.updateEmployee(
+      id: id,
+      name: name,
+      role: role,
+      startDate: startDate,
+      endDate: endDate,
+    );
+    print(response);
+    if (response == 1) {
+      await fetchEmployeeList();
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (builder) => Homepage()),
+          (route) => false);
     }
   }
 }

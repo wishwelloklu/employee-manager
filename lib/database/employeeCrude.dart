@@ -46,10 +46,22 @@ class EmployeeCrud {
     return res;
   }
 
-  updateEmployee(int id, String qty) async {
+  updateEmployee({
+    required int id,
+    required String name,
+    required String role,
+    required String startDate,
+    required String endDate,
+  }) async {
+    Map<String, dynamic> row = {
+      "name": name,
+      "role": role,
+      "startDate": startDate,
+      "endDate": endDate,
+    };
     final db = await database;
-    var res =
-        await db!.rawUpdate("UPDATE employee SET quantity=$qty WHERE id=$id");
+    var res = await db!.update(DatabaseHelper.db.tableName, row,
+        where: 'id=?', whereArgs: [id]);
     return res;
   }
 }

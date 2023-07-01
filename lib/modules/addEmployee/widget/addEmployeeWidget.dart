@@ -44,7 +44,7 @@ Widget addEmployeeWidget({
                 hintStyle: h5,
                 isDense: true,
                 border: InputBorder.none,
-                constraints: BoxConstraints(maxHeight: 35),
+                constraints: BoxConstraints(maxHeight: 40),
               ),
               // validator: (value) {
               //   if (value!.isEmpty) {
@@ -83,7 +83,7 @@ Widget addEmployeeWidget({
                 hintStyle: h5,
                 isDense: true,
                 border: InputBorder.none,
-                constraints: BoxConstraints(maxHeight: 35),
+                constraints: BoxConstraints(maxHeight: 40),
               ),
             ),
           ],

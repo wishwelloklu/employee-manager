@@ -65,7 +65,10 @@ class _HomepageState extends State<Homepage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (builder) => AddEmployee()),
+            MaterialPageRoute(
+                builder: (builder) => AddEmployee(
+                      isEdit: false,
+                    )),
             (route) => false),
         backgroundColor: primaryColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
@@ -87,9 +90,10 @@ class _HomepageState extends State<Homepage> {
                 context: context,
                 formatter: formatter,
                 list: employeeModelList,
-                onSlideToDelete: (direction, index, id) => context
+                onSlideToDelete: (id) => context
                     .read<EmployeeListCubit>()
                     .deleteEmplyee(id, context),
+                onEmplopyee: (EmployeeModel model) => _onEmployee(model),
               )
             : Center(
                 child: SvgPicture.asset("assets/empty.svg"),
@@ -98,21 +102,11 @@ class _HomepageState extends State<Homepage> {
     );
   }
 
-  // _onSlideToDelete(DismissDirection direction, int index, int id) async {
-  //   await ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //     content: Text("Employee data has been deleted"),
-  //     duration: Duration(seconds: 10),
-  //     action: SnackBarAction(
-  //         label: "Undo",
-  //         onPressed: () {
-  //           return;
-  //         }),
-  //   ));
-  //   await Future.delayed(Duration(seconds: 10));
-
-  // print(response);
-  // if (response == 1) {
-  //   setState(() => employeeModelList!.employeeModelList!.removeAt(index));
-  // }
-  // }
+  _onEmployee(EmployeeModel model) {
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+            builder: (builder) => AddEmployee(isEdit: true, model: model)),
+        (route) => false);
+  }
 }
