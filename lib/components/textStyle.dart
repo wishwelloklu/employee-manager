@@ -24,7 +24,7 @@ TextStyle h3BlackBold = TextStyle(
 
 TextStyle h4WhiteBold = TextStyle(
   color: Colors.white,
-  fontSize: 15,
+  fontSize: 14,
   fontWeight: FontWeight.bold,
 );
 
@@ -36,10 +36,18 @@ TextStyle h4BlackBold = TextStyle(
 
 TextStyle h4Black = TextStyle(
   color: Colors.black,
-  fontSize: 16,
+  fontSize: 14,
 );
 
 TextStyle h4Grey = TextStyle(
   color: const Color.fromARGB(255, 131, 131, 131),
-  fontSize: 16,
+  fontSize: 14,
+);
+
+TextStyle h4 = TextStyle(
+  fontSize: 14,
+);
+
+TextStyle h5 = TextStyle(
+  fontSize: 12,
 );
