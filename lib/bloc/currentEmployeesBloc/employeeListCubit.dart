@@ -76,7 +76,7 @@ class EmployeeListCubit extends Cubit<EmployeeListState> {
         scaffoldToast(
           context: context,
           message: "Employee data has been deleted",
-          onTap: () async => undoDelete(id),
+          onTap: () async => undoDelete(id, context),
           duration: Duration(seconds: 10),
         );
       } else {
@@ -94,12 +94,14 @@ class EmployeeListCubit extends Cubit<EmployeeListState> {
     }
   }
 
-  Future undoDelete(int id) async {
+  Future undoDelete(int id, BuildContext context) async {
     EmployeeCrud employeeCrud = EmployeeCrud();
     emit(LoadingEmployeeListState());
     var response = await employeeCrud.undoDelete(id);
     print(response);
     if (response == 1) {
+      final cubic = context.read<PreviousEmployeeListCubit>();
+      await cubic.fetchPreviousEmployeeList();
       await fetchEmployeeList();
     }
   }

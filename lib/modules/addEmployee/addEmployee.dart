@@ -7,6 +7,7 @@ import 'package:employee_manager/modules/currentEmployees/currentEmployees.dart'
 import 'package:employee_manager/modules/mainHome.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../components/colors.dart';
 import '../../components/textStyle.dart';
@@ -94,10 +95,12 @@ class _AddEmployeeWidgetState extends State<AddEmployeeWidget> {
                     .deleteEmplyee(widget.model!.id!, context);
                 Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (builder) => CurrentEmployees()),
+                    MaterialPageRoute(builder: (builder) => MainHome()),
                     (route) => false);
               },
-              icon: Icon(Icons.delete_outline),
+              icon: Icon(
+                FontAwesomeIcons.trashCan,
+              ),
               color: white,
             )
         ],

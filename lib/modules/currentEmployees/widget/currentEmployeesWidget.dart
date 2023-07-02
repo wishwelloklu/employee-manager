@@ -1,6 +1,7 @@
 import 'package:employee_manager/components/textStyle.dart';
 import 'package:employee_manager/model/employeesModel.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/src/intl/date_format.dart';
 
 import '../../../components/colors.dart';
@@ -31,10 +32,13 @@ Widget currentEmployeesWidget({
                 onSlideToDelete(list.employeeModelList![index].id!),
             direction: DismissDirection.endToStart,
             background: Container(
-              padding: EdgeInsets.only(right: 20),
+              padding: EdgeInsets.only(right: 15),
               alignment: Alignment.centerRight,
               color: red,
-              child: Icon(Icons.delete),
+              child: Icon(
+                FontAwesomeIcons.trashCan,
+                color: white,
+              ),
             ),
             child: ListTile(
               onTap: () => onEmplopyee(list.employeeModelList![index]),
