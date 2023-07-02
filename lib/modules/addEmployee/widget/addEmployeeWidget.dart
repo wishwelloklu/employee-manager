@@ -26,9 +26,10 @@ Widget addEmployeeWidget({
         child: Column(
           children: [
             TextFormField(
-              cursorHeight: 15,
+              // cursorHeight: 20,
               controller: employeeController,
               style: h4Black,
+              cursorColor: primaryColor,
               decoration: InputDecoration(
                 prefixIcon: Icon(
                   Icons.person_outlined,
@@ -46,44 +47,46 @@ Widget addEmployeeWidget({
                 border: InputBorder.none,
                 constraints: BoxConstraints(maxHeight: 40),
               ),
-              // validator: (value) {
-              //   if (value!.isEmpty) {
-              //     return "This field is required";
-              //   } else {
-              //     return null;
-              //   }
-              // },
             ),
             SizedBox(height: 20),
-            TextFormField(
-              controller: roleController,
-              cursorHeight: 15,
-              readOnly: true,
-              style: h4Black,
-              decoration: InputDecoration(
-                prefixIcon: Icon(
-                  Icons.work_outline,
-                  color: primaryColor,
-                ),
-                suffixIcon: GestureDetector(
-                  onTap: onDropDown,
-                  child: Icon(
-                    Icons.arrow_drop_down,
+            GestureDetector(
+              onTap: onDropDown,
+              child: TextFormField(
+                controller: roleController,
+                // cursorHeight: 15,
+                readOnly: true,
+                enabled: false,
+
+                style: h4Black,
+                cursorColor: primaryColor,
+                decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    Icons.work_outline,
                     color: primaryColor,
-                    size: 30,
                   ),
+                  suffixIcon: GestureDetector(
+                    onTap: onDropDown,
+                    child: Icon(
+                      Icons.arrow_drop_down,
+                      color: primaryColor,
+                      size: 30,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: grey, width: .2),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: grey, width: .2),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: grey, width: .2),
+                  ),
+                  hintText: "Select role",
+                  hintStyle: h5,
+                  isDense: true,
+                  border: InputBorder.none,
+                  constraints: BoxConstraints(maxHeight: 40),
                 ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: grey, width: .2),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: grey, width: .2),
-                ),
-                hintText: "Select role",
-                hintStyle: h5,
-                isDense: true,
-                border: InputBorder.none,
-                constraints: BoxConstraints(maxHeight: 40),
               ),
             ),
           ],

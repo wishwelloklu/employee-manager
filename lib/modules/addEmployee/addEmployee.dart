@@ -1,9 +1,10 @@
-import 'package:employee_manager/bloc/employeeListCubit.dart';
-import 'package:employee_manager/bloc/employeeListState.dart';
-import 'package:employee_manager/model/employeeModel.dart';
+import 'package:employee_manager/bloc/currentEmployeesBloc/employeeListCubit.dart';
+import 'package:employee_manager/bloc/currentEmployeesBloc/employeeListState.dart';
+import 'package:employee_manager/model/employeesModel.dart';
 import 'package:employee_manager/modules/addEmployee/widget/addEmployeeWidget.dart';
 import 'package:employee_manager/components/button.dart';
-import 'package:employee_manager/modules/homepage/homepage.dart';
+import 'package:employee_manager/modules/currentEmployees/currentEmployees.dart';
+import 'package:employee_manager/modules/mainHome.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -64,6 +65,8 @@ class _AddEmployeeWidgetState extends State<AddEmployeeWidget> {
       _startDate = DateTime.parse(widget.model!.startDate!);
       _endDate = DateTime.parse(widget.model!.endDate!);
     }
+
+    print(_endDate);
   }
 
   @override
@@ -91,7 +94,7 @@ class _AddEmployeeWidgetState extends State<AddEmployeeWidget> {
                     .deleteEmplyee(widget.model!.id!, context);
                 Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (builder) => Homepage()),
+                    MaterialPageRoute(builder: (builder) => CurrentEmployees()),
                     (route) => false);
               },
               icon: Icon(Icons.delete_outline),
@@ -133,7 +136,7 @@ class _AddEmployeeWidgetState extends State<AddEmployeeWidget> {
               button(
                 onPressed: () => Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (builder) => Homepage()),
+                    MaterialPageRoute(builder: (builder) => MainHome()),
                     (route) => false),
                 text: "Cancel",
                 color: primaryColor.withOpacity(.15),
@@ -145,27 +148,35 @@ class _AddEmployeeWidgetState extends State<AddEmployeeWidget> {
               ),
               SizedBox(width: 10),
               button(
-                onPressed: () {
-                  if (!widget.isEdit) {
-                    context.read<EmployeeListCubit>().saveEmployee(
-                          name: _employeeController.text.trim(),
-                          role: _roleController.text.trim(),
-                          startDate: _startDate.toIso8601String().split("T")[0],
-                          endDate: _endDate!.toIso8601String().split("T")[0],
-                          isUpdate: false,
-                          context: context,
-                        );
-                  } else {
-                    context.read<EmployeeListCubit>().updateDetails(
-                          name: _employeeController.text.trim(),
-                          role: _roleController.text.trim(),
-                          startDate: _startDate.toIso8601String().split("T")[0],
-                          endDate: _endDate!.toIso8601String().split("T")[0],
-                          context: context,
-                          id: widget.model!.id!,
-                        );
-                  }
-                },
+                onPressed: _employeeController.text.isNotEmpty &&
+                        _roleController.text.isNotEmpty &&
+                        _endDate != null
+                    ? () {
+                        if (!widget.isEdit) {
+                          context.read<EmployeeListCubit>().saveEmployee(
+                                name: _employeeController.text.trim(),
+                                role: _roleController.text.trim(),
+                                startDate:
+                                    _startDate.toIso8601String().split("T")[0],
+                                endDate:
+                                    _endDate!.toIso8601String().split("T")[0],
+                                isUpdate: false,
+                                context: context,
+                              );
+                        } else {
+                          context.read<EmployeeListCubit>().updateDetails(
+                                name: _employeeController.text.trim(),
+                                role: _roleController.text.trim(),
+                                startDate:
+                                    _startDate.toIso8601String().split("T")[0],
+                                endDate:
+                                    _endDate!.toIso8601String().split("T")[0],
+                                context: context,
+                                id: widget.model!.id!,
+                              );
+                        }
+                      }
+                    : null,
                 text: "Save",
                 color: primaryColor,
                 textColor: white,
@@ -225,7 +236,6 @@ class _AddEmployeeWidgetState extends State<AddEmployeeWidget> {
           child: child!,
         );
       },
-      onDatePickerModeChange: (value) {},
     );
     if (selectedDate != null) {
       if (!startDate) _endDate = selectedDate;

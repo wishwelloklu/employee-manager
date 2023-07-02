@@ -1,3 +1,4 @@
+import 'package:employee_manager/components/colors.dart';
 import 'package:flutter/material.dart';
 
 TextStyle h3White = TextStyle(
@@ -8,6 +9,13 @@ TextStyle h3White = TextStyle(
 TextStyle h3Black = TextStyle(
   color: Colors.black,
   fontSize: 16,
+  fontWeight: FontWeight.w600,
+);
+
+TextStyle h3Primary = TextStyle(
+  color: primaryColor,
+  fontSize: 16,
+  fontWeight: FontWeight.w600,
 );
 
 TextStyle h3WhiteBold = TextStyle(
@@ -37,11 +45,13 @@ TextStyle h4BlackBold = TextStyle(
 TextStyle h4Black = TextStyle(
   color: Colors.black,
   fontSize: 14,
+  fontWeight: FontWeight.w600,
 );
 
 TextStyle h4Grey = TextStyle(
-  color: const Color.fromARGB(255, 131, 131, 131),
+  color: Color(0xFF949C9E),
   fontSize: 14,
+  fontWeight: FontWeight.w600,
 );
 
 TextStyle h4 = TextStyle(

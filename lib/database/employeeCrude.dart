@@ -1,5 +1,6 @@
 import 'package:employee_manager/database/databaseHelper.dart';
-import 'package:employee_manager/model/employeeModel.dart';
+
+import '../model/employeesModel.dart';
 
 class EmployeeCrud {
   final database = DatabaseHelper.db.database;
@@ -30,7 +31,19 @@ class EmployeeCrud {
 
   getEmployees() async {
     final db = await database;
-    var res = await db!.rawQuery("SELECT * FROM employee WHERE deleted = 0");
+    var res = await db!.rawQuery("SELECT * FROM employee WHERE deleted=0");
+    return res.toList();
+  }
+
+  getAllEmployees() async {
+    final db = await database;
+    var res = await db!.rawQuery("SELECT * FROM employee");
+    return res.toList();
+  }
+
+  getPreviousEmployees() async {
+    final db = await database;
+    var res = await db!.rawQuery("SELECT * FROM employee WHERE deleted=1");
     return res.toList();
   }
 

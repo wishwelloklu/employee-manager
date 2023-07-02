@@ -1,5 +1,5 @@
 import 'package:employee_manager/database/employeeCrude.dart';
-import 'package:employee_manager/model/employeeModel.dart';
+import 'package:employee_manager/model/employeesModel.dart';
 import 'package:sqflite/sqflite.dart';
 
 Future<Map<String, dynamic>> saveEmployeeIntoDb({

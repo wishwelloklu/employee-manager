@@ -1,9 +1,11 @@
-import 'package:employee_manager/modules/homepage/homepage.dart';
+import 'package:employee_manager/bloc/allBloc.dart';
+import 'package:employee_manager/bloc/previousEmployeesBloc/PreviousEmployeeListCubit.dart';
+import 'package:employee_manager/modules/mainHome.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'bloc/blocObserver.dart';
-import 'bloc/employeeListCubit.dart';
+import 'bloc/currentEmployeesBloc/employeeListCubit.dart';
 import 'database/employeeCrude.dart';
 
 void main() {
@@ -18,15 +20,26 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (create) => EmployeeListCubit(EmployeeCrud()),
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
-          ),
-          home: Homepage(),
-        ));
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (create) => AllListCubit(),
+        ),
+        BlocProvider(
+          create: (create) => EmployeeListCubit(EmployeeCrud()),
+        ),
+        BlocProvider(
+          create: (create) => PreviousEmployeeListCubit(EmployeeCrud()),
+        ),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: MainHome(),
+      ),
+    );
   }
 }

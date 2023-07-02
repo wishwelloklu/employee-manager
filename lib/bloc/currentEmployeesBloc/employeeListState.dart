@@ -1,11 +1,11 @@
-import 'package:employee_manager/model/employeeModel.dart';
+import 'package:employee_manager/model/employeesModel.dart';
 
 abstract class EmployeeListState {}
 
 class InitEmployeeListState extends EmployeeListState {}
 
 class GetEmployeeListState extends EmployeeListState {
-  final EmployeeModelList response;
+  final EmployeeModelList? response;
   GetEmployeeListState(this.response);
 }
 
@@ -21,4 +21,7 @@ class ErrorEmployeeListState extends EmployeeListState {
 }
 
 class LoadingEmployeeListState extends EmployeeListState {}
+
+class EmployeeIsEmptyState extends EmployeeListState {}
+
 class NotLoadingEmployeeListState extends EmployeeListState {}

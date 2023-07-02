@@ -6,6 +6,7 @@ class EmployeeModel {
   String? role;
   String? startDate;
   String? endDate;
+  int? deleted;
 
   EmployeeModel({
     this.id,
@@ -13,6 +14,7 @@ class EmployeeModel {
     this.role,
     this.startDate,
     this.endDate,
+    this.deleted,
   });
 }
 
@@ -36,6 +38,7 @@ Future<EmployeeModelList> getAllEmployees() async {
           role: data['role'],
           startDate: data['startDate'],
           endDate: data['endDate'],
+          deleted: data['deleted'],
         ),
       );
     }

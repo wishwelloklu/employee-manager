@@ -1,11 +1,12 @@
+import 'package:employee_manager/bloc/previousEmployeesBloc/PreviousEmployeeListCubit.dart';
 import 'package:employee_manager/components/toastMessage.dart';
+import 'package:employee_manager/database/employeeCrude.dart';
 import 'package:employee_manager/database/saveEmployee.dart';
-import 'package:employee_manager/modules/homepage/homepage.dart';
+import 'package:employee_manager/model/employeesModel.dart';
+import 'package:employee_manager/modules/mainHome.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../database/employeeCrude.dart';
-import '../model/employeeModel.dart';
 import 'employeeListState.dart';
 
 class EmployeeListCubit extends Cubit<EmployeeListState> {
@@ -16,7 +17,6 @@ class EmployeeListCubit extends Cubit<EmployeeListState> {
     emit(LoadingEmployeeListState());
     try {
       final response = await getAllEmployees();
-
       emit(GetEmployeeListState(response));
     } on Exception catch (e) {
       emit(ErrorEmployeeListState(e.toString()));
@@ -51,7 +51,7 @@ class EmployeeListCubit extends Cubit<EmployeeListState> {
       );
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (builder) => Homepage()),
+          MaterialPageRoute(builder: (builder) => MainHome()),
           (route) => false);
     } else {
       emit(NotLoadingEmployeeListState());
@@ -69,6 +69,8 @@ class EmployeeListCubit extends Cubit<EmployeeListState> {
       var response = await employeeCrud.deleteEmployee(id);
 
       if (response == 1) {
+        final cubic = context.read<PreviousEmployeeListCubit>();
+        await cubic.fetchPreviousEmployeeList();
         await fetchEmployeeList();
 
         scaffoldToast(
@@ -124,7 +126,7 @@ class EmployeeListCubit extends Cubit<EmployeeListState> {
       await fetchEmployeeList();
       Navigator.pushAndRemoveUntil(
           context,
-          MaterialPageRoute(builder: (builder) => Homepage()),
+          MaterialPageRoute(builder: (builder) => MainHome()),
           (route) => false);
     }
   }
