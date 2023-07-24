@@ -35,11 +35,11 @@ class EmployeeCrud {
     return res.toList();
   }
 
-  getAllEmployees() async {
-    final db = await database;
-    var res = await db!.rawQuery("SELECT * FROM employee");
-    return res.toList();
-  }
+  // getAllEmployees() async {
+  //   final db = await database;
+  //   var res = await db!.rawQuery("SELECT * FROM employee");
+  //   return res.toList();
+  // }
 
   getPreviousEmployees() async {
     final db = await database;

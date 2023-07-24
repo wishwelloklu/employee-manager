@@ -1,9 +1,8 @@
-import 'package:employee_manager/bloc/currentEmployeesBloc/employeeListState.dart';
-import 'package:employee_manager/bloc/previousEmployeesBloc/PreviousEmployeeListCubit.dart';
-import 'package:employee_manager/bloc/previousEmployeesBloc/PreviousEmployeeListState.dart';
 import 'package:employee_manager/modules/previousEmployees/widget/previousEmployeesWidget.dart';
+import 'package:employee_manager/provider/previousEmployeesProvider.dart';
+import 'package:employee_manager/repository.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 import '../../model/previousEmployeesModel .dart';
@@ -17,46 +16,39 @@ class PreviousEmpolyees extends StatefulWidget {
 
 class _PreviousEmpolyeesState extends State<PreviousEmpolyees> {
   final DateFormat formatter = DateFormat('d MMM yyyy');
+  Repository repository = Repository();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final cubic = context.read<PreviousEmployeeListCubit>();
-      cubic.fetchPreviousEmployeeList();
-    });
+    repository.fetchPreviouEmployees();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<PreviousEmployeeListCubit, PreviousEmployeeListState>(
-      builder: (context, state) {
-        if (state is LoadingEmployeeListState || state is InitEmployeeListState)
-          return Center(
-            child: CircularProgressIndicator.adaptive(),
-          );
-        else if (state is GetPreviousEmployeeListState) {
-          if (state.response.previousEmployeeModelList!.isNotEmpty)
-            return _mainContent(context, state.response, state);
-          else
-            return SizedBox.shrink();
-        } else if (state is ErrorPreviousEmployeeListState)
-          return Center(
-            child: Text(state.message),
-          );
+    return Scaffold(
+      body: StreamBuilder(
+        stream: previousEmployeesStream,
+        initialData: previousEmployeeModelList ?? null,
+        builder: (context, snapshot) {
+          if (snapshot.hasData &&
+              snapshot.data!.previousEmployeeModelList!.isNotEmpty) {
+            if (snapshot.data!.previousEmployeeModelList!.isNotEmpty) {
+              return _mainContent(context, snapshot.data);
+            }
+          } else if (!snapshot.hasData ||
+              snapshot.data!.previousEmployeeModelList!.isEmpty)
+            return Center(child: SvgPicture.asset("assets/empty.svg"));
 
-        return Center(
-          child: Text(state.toString()),
-        );
-      },
-      // ),
+          return Center(child: CircularProgressIndicator.adaptive());
+        },
+      ),
     );
   }
 
   Widget _mainContent(
-      BuildContext context,
-      PreviousEmployeeModelList? employeeModelList,
-      PreviousEmployeeListState state) {
+      BuildContext context, PreviousEmployeeModelList? employeeModelList) {
     return Stack(
       children: [
         previousEmployeesWidget(

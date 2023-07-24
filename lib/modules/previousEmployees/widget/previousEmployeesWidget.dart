@@ -9,39 +9,28 @@ Widget previousEmployeesWidget({
   required PreviousEmployeeModelList? list,
   required DateFormat formatter,
 }) {
-  return  Column(
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.all(16),
-              color: Color(0xFFF2F2F2),
-              child: Text(
-                "Previous employees",
-                style: h3Primary,
-              ),
-            ),
-            for (var index = 0;
-                index < list!.previousEmployeeModelList!.length;
-                index++)
-              ListTile(
-                title: Text("${list.previousEmployeeModelList![index].name}",
-                    style: h3Black),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(list.previousEmployeeModelList![index].role!,
-                        style: h4Grey),
-                    Text(
-                        "From ${formatter.format(DateTime.parse(list.previousEmployeeModelList![index].startDate!))}",
-                        style: h4Grey),
-                  ],
-                ),
-              ),
-            Divider(
-              thickness: .5,
-              height: 0,
-            ),
-          ],
-        )
-     ;
+  return ListView(
+    children: [
+      for (var index = 0;
+          index < list!.previousEmployeeModelList!.length;
+          index++)
+        ListTile(
+          title: Text("${list.previousEmployeeModelList![index].name}",
+              style: h3Black),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(list.previousEmployeeModelList![index].role!, style: h4Grey),
+              Text(
+                  "From ${formatter.format(DateTime.parse(list.previousEmployeeModelList![index].startDate!))}",
+                  style: h4Grey),
+            ],
+          ),
+        ),
+      Divider(
+        thickness: .5,
+        height: 0,
+      ),
+    ],
+  );
 }

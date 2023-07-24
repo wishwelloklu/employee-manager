@@ -13,17 +13,8 @@ Widget currentEmployeesWidget({
   required EmployeeModelList? list,
   required DateFormat formatter,
 }) {
-  return Column(
+  return ListView(
     children: [
-      Container(
-        width: MediaQuery.of(context).size.width,
-        padding: EdgeInsets.all(16),
-        color: Color(0xFFF2F2F2),
-        child: Text(
-          "Current employees",
-          style: h3Primary,
-        ),
-      ),
       for (var index = 0; index < list!.employeeModelList!.length; index++)
         if (list.employeeModelList![index].deleted == 0) ...[
           Dismissible(

@@ -1,8 +1,10 @@
-import 'package:employee_manager/bloc/currentEmployeesBloc/employeeListCubit.dart';
-import 'package:employee_manager/bloc/currentEmployeesBloc/employeeListState.dart';
+import 'package:employee_manager/components/toastMessage.dart';
+import 'package:employee_manager/database/employeeCrude.dart';
 import 'package:employee_manager/modules/addEmployee/addEmployee.dart';
+import 'package:employee_manager/provider/currentEmployeesProvider.dart';
+import 'package:employee_manager/repository.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 
 import '../../model/employeesModel.dart';
@@ -17,52 +19,46 @@ class CurrentEmployees extends StatefulWidget {
 
 class _CurrentEmployeesState extends State<CurrentEmployees> {
   final DateFormat formatter = DateFormat('d MMM yyyy');
+  Repository repository = Repository();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      final cubic = context.read<EmployeeListCubit>();
-      cubic.fetchEmployeeList();
-    });
+    repository.fetchCurrentEmployees();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<EmployeeListCubit, EmployeeListState>(
-      builder: (context, state) {
-        if (state is LoadingEmployeeListState || state is InitEmployeeListState)
-          return Center(
-            child: CircularProgressIndicator.adaptive(),
-          );
-        else if (state is GetEmployeeListState) {
-          if (state.response!.employeeModelList!.isNotEmpty)
-            return _mainContent(context, state.response, state);
-          else
-            return SizedBox.shrink();
-        } else if (state is ErrorEmployeeListState)
-          return Center(
-            child: Text(state.message),
-          );
-
-        return Center(
-          child: Text(state.toString()),
-        );
-      },
-      // ),
+    return Scaffold(
+      body: StreamBuilder(
+        stream: currentEmployeesStream,
+        initialData: employeeModelList,
+        builder: (context, snapshot) {
+          if (snapshot.hasData &&
+              snapshot.data!.employeeModelList!.isNotEmpty) {
+            return _mainContent(context, snapshot.data);
+          } else if (!snapshot.hasData ||
+              snapshot.data!.employeeModelList!.isEmpty) {
+            return Center(child: SvgPicture.asset("assets/empty.svg"));
+          }
+          return Center(child: CircularProgressIndicator.adaptive());
+        },
+      ),
     );
   }
 
-  Widget _mainContent(BuildContext context,
-      EmployeeModelList? employeeModelList, EmployeeListState state) {
+  Widget _mainContent(
+    BuildContext context,
+    EmployeeModelList? employeeModelList,
+  ) {
     return Stack(
       children: [
         currentEmployeesWidget(
           context: context,
           formatter: formatter,
           list: employeeModelList,
-          onSlideToDelete: (id) =>
-              context.read<EmployeeListCubit>().deleteEmplyee(id, context),
+          onSlideToDelete: (id) => _onSlideEmployee(id),
           onEmplopyee: (EmployeeModel model) => _onEmployee(model),
         )
       ],
@@ -75,5 +71,15 @@ class _CurrentEmployeesState extends State<CurrentEmployees> {
         MaterialPageRoute(
             builder: (builder) => AddEmployee(isEdit: true, model: model)),
         (route) => false);
+  }
+
+  _onSlideEmployee(int id) async {
+    EmployeeCrud crud = EmployeeCrud();
+    int response = await crud.deleteEmployee(id);
+    if (response == 1) {
+      scaffoldToast(context: context, message: "Employee deleted");
+      repository.fetchCurrentEmployees();
+      return;
+    }
   }
 }

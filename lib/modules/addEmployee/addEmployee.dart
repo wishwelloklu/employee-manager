@@ -1,45 +1,32 @@
-import 'package:employee_manager/bloc/currentEmployeesBloc/employeeListCubit.dart';
-import 'package:employee_manager/bloc/currentEmployeesBloc/employeeListState.dart';
+import 'package:employee_manager/components/toastMessage.dart';
+import 'package:employee_manager/database/employeeCrude.dart';
+import 'package:employee_manager/database/saveEmployee.dart';
 import 'package:employee_manager/model/employeesModel.dart';
 import 'package:employee_manager/modules/addEmployee/widget/addEmployeeWidget.dart';
 import 'package:employee_manager/components/button.dart';
-import 'package:employee_manager/modules/currentEmployees/currentEmployees.dart';
 import 'package:employee_manager/modules/mainHome.dart';
+import 'package:employee_manager/repository.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../components/colors.dart';
 import '../../components/textStyle.dart';
 import 'package:intl/intl.dart';
 
-class AddEmployee extends StatelessWidget {
+class AddEmployee extends StatefulWidget {
   final bool isEdit;
   final EmployeeModel? model;
-  const AddEmployee({super.key, required this.isEdit, this.model});
+  AddEmployee({required this.isEdit, this.model});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<EmployeeListCubit, EmployeeListState>(
-        builder: (_, state) {
-      return AddEmployeeWidget(state, isEdit, model);
-    });
-  }
+  State<AddEmployee> createState() => _AddEmployeeState();
 }
 
-class AddEmployeeWidget extends StatefulWidget {
-  final EmployeeListState? state;
-  final bool isEdit;
-  final EmployeeModel? model;
-  AddEmployeeWidget(this.state, this.isEdit, this.model);
-
-  @override
-  State<AddEmployeeWidget> createState() => _AddEmployeeWidgetState();
-}
-
-class _AddEmployeeWidgetState extends State<AddEmployeeWidget> {
+class _AddEmployeeState extends State<AddEmployee> {
   final _employeeController = TextEditingController();
   final _roleController = TextEditingController();
+
+  bool _isLoading = false;
 
   GlobalKey<FormState> _globalKey = GlobalKey<FormState>();
 
@@ -72,133 +59,101 @@ class _AddEmployeeWidgetState extends State<AddEmployeeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: false,
-        backgroundColor: primaryColor,
-        automaticallyImplyLeading: false,
-        title: !widget.isEdit
-            ? Text(
-                "Add Employee Details",
-                style: h3WhiteBold,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: false,
+          backgroundColor: primaryColor,
+          automaticallyImplyLeading: false,
+          title: !widget.isEdit
+              ? Text(
+                  "Add Employee Details",
+                  style: h3WhiteBold,
+                )
+              : Text(
+                  "Edit Employee Details",
+                  style: h3WhiteBold,
+                ),
+          actions: [
+            if (widget.isEdit)
+              IconButton(
+                onPressed: () => _onSlideEmployee(widget.model!.id!),
+                icon: Icon(
+                  FontAwesomeIcons.trashCan,
+                ),
+                color: white,
               )
-            : Text(
-                "Edit Employee Details",
-                style: h3WhiteBold,
-              ),
-        actions: [
-          if (widget.isEdit)
-            IconButton(
-              onPressed: () async {
-                await context
-                    .read<EmployeeListCubit>()
-                    .deleteEmplyee(widget.model!.id!, context);
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (builder) => MainHome()),
-                    (route) => false);
-              },
-              icon: Icon(
-                FontAwesomeIcons.trashCan,
-              ),
-              color: white,
-            )
-        ],
-      ),
-      body: Stack(
-        children: [
-          addEmployeeWidget(
-            context: context,
-            key: _globalKey,
-            employeeController: _employeeController,
-            roleController: _roleController,
-            employeeFocus: _employeeFocus,
-            roleFocus: _roleFocus,
-            formatter: formatter,
-            startDate: _startDate,
-            endDate: _endDate ?? null,
-            onDropDown: () => _showModalSheet(),
-            onEnd: () => _onStart(false),
-            onStart: () => _onStart(true),
-          ),
-          if (widget.state is LoadingEmployeeListState)
-            Scaffold(
-              body: Center(
-                child: CircularProgressIndicator.adaptive(),
-              ),
+          ],
+        ),
+        body: Stack(
+          children: [
+            addEmployeeWidget(
+              context: context,
+              key: _globalKey,
+              employeeController: _employeeController,
+              roleController: _roleController,
+              employeeFocus: _employeeFocus,
+              roleFocus: _roleFocus,
+              formatter: formatter,
+              startDate: _startDate,
+              endDate: _endDate ?? null,
+              onDropDown: () => _showModalSheet(),
+              onEnd: () => _onStart(false),
+              onStart: () => _onStart(true),
             ),
-        ],
-      ),
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Divider(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              button(
-                onPressed: () => Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (builder) => MainHome()),
-                    (route) => false),
-                text: "Cancel",
-                color: primaryColor.withOpacity(.15),
-                textColor: primaryColor,
-                context: context,
-                textStyle: h5,
-                height: 35,
-                useWidth: false,
+            if (_isLoading)
+              Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator.adaptive(),
+                ),
               ),
-              SizedBox(width: 10),
-              button(
-                onPressed: _employeeController.text.isNotEmpty &&
-                        _roleController.text.isNotEmpty &&
-                        _endDate != null
-                    ? () {
-                        if (!widget.isEdit) {
-                          context.read<EmployeeListCubit>().saveEmployee(
-                                name: _employeeController.text.trim(),
-                                role: _roleController.text.trim(),
-                                startDate:
-                                    _startDate.toIso8601String().split("T")[0],
-                                endDate:
-                                    _endDate!.toIso8601String().split("T")[0],
-                                isUpdate: false,
-                                context: context,
-                              );
-                        } else {
-                          context.read<EmployeeListCubit>().updateDetails(
-                                name: _employeeController.text.trim(),
-                                role: _roleController.text.trim(),
-                                startDate:
-                                    _startDate.toIso8601String().split("T")[0],
-                                endDate:
-                                    _endDate!.toIso8601String().split("T")[0],
-                                context: context,
-                                id: widget.model!.id!,
-                              );
-                        }
-                      }
-                    : null,
-                text: "Save",
-                color: primaryColor,
-                textColor: white,
-                context: context,
-                textStyle: h5,
-                height: 35,
-                useWidth: false,
-              ),
-              SizedBox(width: 10),
-            ],
-          ),
-          SizedBox(height: 10),
-        ],
+          ],
+        ),
+        floatingActionButton: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Divider(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                button(
+                  onPressed: () => Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (builder) => MainHome()),
+                      (route) => false),
+                  text: "Cancel",
+                  color: primaryColor.withOpacity(.15),
+                  textColor: primaryColor,
+                  context: context,
+                  textStyle: h5,
+                  height: 35,
+                  useWidth: false,
+                ),
+                SizedBox(width: 10),
+                button(
+                  onPressed: () => _onAddEmployee(),
+                  text: "Save",
+                  color: primaryColor,
+                  textColor: white,
+                  context: context,
+                  textStyle: h5,
+                  height: 35,
+                  useWidth: false,
+                ),
+                SizedBox(width: 10),
+              ],
+            ),
+            SizedBox(height: 10),
+          ],
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
   void _showModalSheet() {
+    FocusScope.of(context).unfocus();
     showModalBottomSheet(
       context: context,
       backgroundColor: white,
@@ -251,5 +206,65 @@ class _AddEmployeeWidgetState extends State<AddEmployeeWidget> {
     _roleController.text = role;
     Navigator.pop(context);
     setState(() {});
+  }
+
+  Future<void> _onAddEmployee() async {
+    EmployeeCrud crud = EmployeeCrud();
+    setState(() => _isLoading = true);
+    if (widget.isEdit) {
+      int response = await crud.updateEmployee(
+        name: _employeeController.text.trim(),
+        role: _roleController.text.trim(),
+        startDate: _startDate.toIso8601String().split("T")[0],
+        endDate: _endDate!.toIso8601String().split("T")[0],
+        id: widget.model!.id!,
+      );
+      setState(() => _isLoading = false);
+      if (response == 1) {
+        scaffoldToast(context: context, message: "Updated successful");
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (builder) => MainHome()),
+            (route) => false);
+      } else {
+        scaffoldToast(
+            context: context, message: "Something went wrong. Try again");
+        return;
+      }
+    } else {
+      Map response = await saveEmployeeIntoDb(
+        name: _employeeController.text.trim(),
+        role: _roleController.text.trim(),
+        startDate: _startDate.toIso8601String().split("T")[0],
+        endDate: _endDate!.toIso8601String().split("T")[0],
+        isUpdate: widget.isEdit,
+      );
+      setState(() => _isLoading = false);
+      if (response['ok']) {
+        scaffoldToast(context: context, message: response['msg']);
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (builder) => MainHome()),
+            (route) => false);
+      } else {
+        scaffoldToast(context: context, message: response['msg']);
+        return;
+      }
+    }
+  }
+
+  _onSlideEmployee(int id) async {
+    EmployeeCrud crud = EmployeeCrud();
+    Repository repository = Repository();
+    int response = await crud.deleteEmployee(id);
+    if (response == 1) {
+      scaffoldToast(context: context, message: "Employee deleted");
+      await repository.fetchCurrentEmployees();
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (builder) => MainHome()),
+          (route) => false);
+      return;
+    }
   }
 }

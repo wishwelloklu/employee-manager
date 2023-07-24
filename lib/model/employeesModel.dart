@@ -29,8 +29,13 @@ Future<EmployeeModelList> getAllEmployees() async {
   EmployeeCrud crud = EmployeeCrud();
   _employeeModelList.employeeModelList!.clear();
   Future meta = crud.getEmployees();
-  await meta.then((value) {
+  await meta.then((value) async {
     for (var data in value) {
+      DateTime endDate = DateTime.parse(data['endDate']);
+      if (endDate.millisecondsSinceEpoch <=
+          DateTime.now().millisecondsSinceEpoch) {
+        await crud.deleteEmployee(data["id"]);
+      }
       _employeeModelList.employeeModelList!.add(
         EmployeeModel(
           id: data["id"],
