@@ -126,6 +126,7 @@ Widget addEmployeeWidget({
           ),
           SvgPicture.asset(
             "assets/arrow_right_vector.svg",
+            // ignore: deprecated_member_use
             color: primaryColor,
           ),
           GestureDetector(

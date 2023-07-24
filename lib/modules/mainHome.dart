@@ -28,6 +28,7 @@ class _MainHomeState extends State<MainHome> {
       length: _tabs.length,
       child: Scaffold(
         appBar: AppBar(
+          title: Text("Employees"),
           bottom: TabBar(
             dividerColor: grey,
             indicatorColor: primaryColor,
